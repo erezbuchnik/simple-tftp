@@ -1,10 +1,13 @@
 CFLAGS += -g
 
-all: client server
+BIN = client server
+UTIL_OBJ = checksum.o header.o
+
+all: $(BIN)
 
 clean:
-	rm -f *.o client server
+	rm -f $(UTIL_OBJ) $(BIN)
 
-client: checksum.o header.o
+client: $(UTIL_OBJ)
 
-server: checksum.o header.o
+server: $(UTIL_OBJ)
