@@ -50,7 +50,7 @@ int main(int argc, char**argv) {
                 break;
             case '?':
                 printf("Usage: ./server [-p port]\n");
-                exit(1);
+                return 1;
         }
     }
     char PORT[10];
@@ -85,7 +85,7 @@ int main(int argc, char**argv) {
 
         if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof (int)) == -1) {
             perror("setsockopt");
-            exit(1);
+            return 1;
         }
 
         if (bind(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
@@ -106,7 +106,7 @@ int main(int argc, char**argv) {
 
     if (listen(sockfd, BACKLOG) == -1) {
         perror("listen");
-        exit(1);
+        return 1;
     }
 
     sa.sa_handler = sigchld_handler; // reap all dead processes
@@ -114,7 +114,7 @@ int main(int argc, char**argv) {
     sa.sa_flags = SA_RESTART;
     if (sigaction(SIGCHLD, &sa, NULL) == -1) {
         perror("sigaction");
-        exit(1);
+        return 1;
     }
 
     printf("server: waiting for connections...\n");
@@ -156,7 +156,7 @@ int main(int argc, char**argv) {
             while (getfilename) {
                 if ((numbytes = recv(new_fd, buf, PACKET_SIZE, 0)) == -1) {
                     perror("recv");
-                    exit(1);
+                    return 1;
                 }
                 /* We have a packet with filename! */
                 if (numbytes > 0) {
@@ -173,7 +173,7 @@ int main(int argc, char**argv) {
 
                         if ((ack_bytes = send(new_fd, &ackr, HEADER_SIZE, 0)) == -1) {
                             perror("send: ack");
-                            exit(1);
+                            return 1;
                         } else {
                             printf("ACK '%d' sent\n", (int) (head.seq));
                             getfilename = 0;
@@ -208,7 +208,7 @@ int main(int argc, char**argv) {
                     perror("recv");
                     fclose(filefd);
                     close(new_fd);
-                    exit(1);
+                    return 1;
                 }
 
                 read_header(&head, (packet_t *) buf);
@@ -226,7 +226,7 @@ int main(int argc, char**argv) {
 
                         if ((ack_bytes = send(new_fd, &ackr, HEADER_SIZE, 0)) == -1) {
                             perror("send: ack");
-                            exit(1);
+                            return 1;
                         } else {
                             printf("ACK '%d' sent\n", (int) (head.seq));
                             /* write to file */
@@ -242,7 +242,7 @@ int main(int argc, char**argv) {
                     fill_header((int) (head.seq), 0, HEADER_SIZE, FIN, &ackr);
                     if ((ack_bytes = send(new_fd, &ackr, HEADER_SIZE, 0)) == -1) {
                         perror("send: ack");
-                        exit(1);
+                        return 1;
                     } else {
                         printf("FIN '%d' sent\n", (int) (head.seq));
                         recvFIN = 1;
@@ -257,7 +257,7 @@ int main(int argc, char**argv) {
 
             fclose(filefd);
             close(new_fd);
-            exit(0);
+            return 0;
         }
         close(new_fd); // parent doesn't need this
     }
