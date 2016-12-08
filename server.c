@@ -97,12 +97,12 @@ int main(int argc, char**argv) {
         break;
     }
 
+    freeaddrinfo(servinfo); // all done with this structure
+
     if (p == NULL) {
         fprintf(stderr, "server: failed to bind\n");
         return 2;
     }
-
-    freeaddrinfo(servinfo); // all done with this structure
 
     if (listen(sockfd, BACKLOG) == -1) {
         perror("listen");
