@@ -8,21 +8,21 @@
 #define PAYLOAD_SIZE (PACKET_SIZE-HEADER_SIZE)
 
 typedef struct _header_ {
-        u_short seq;
-        u_short ack;
-        u_short checksum;
-        u_short offset:10;
-        u_short flag:6;
+    u_short seq;
+    u_short ack;
+    u_short checksum;
+    u_short offset : 10;
+    u_short flag : 6;
 } header_t;
 
 typedef struct _packet_ {
-        header_t header;
-        u_char payload[PAYLOAD_SIZE];
+    header_t header;
+    u_char payload[PAYLOAD_SIZE];
 } packet_t;
 
 int fill_header(u_short seq, u_short ack, u_short offset, u_short flag, packet_t* packet);
 
-int fill_packet(u_char* src, packet_t* packet,u_short size);
+int fill_packet(u_char* src, packet_t* packet, u_short size);
 
 int read_header(header_t * p, packet_t* packet);
 
