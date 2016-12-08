@@ -52,7 +52,7 @@ int tftp(int sockfd, const void * packet, int expected_seqnum, int timeout, int 
         /* Try to send the packet */
         if ((numbytes = send(sockfd, packet, PACKET_SIZE, 0)) == -1) {
             perror("Error in tftp");
-            exit(1);
+            return 1;
         } else if (numbytes > 0) {
             if (flag == ACK) {
                 printf("Packet ");
@@ -96,7 +96,7 @@ int tftp(int sockfd, const void * packet, int expected_seqnum, int timeout, int 
                 ret = recv(sockfd, ackbuf, HEADER_SIZE, 0);
                 if (ret == -1) {
                     perror("Error in tftp");
-                    exit(1);
+                    return 1;
                 }
                 if (ret > 0) {
                     //printf("We received something\n");
@@ -163,7 +163,7 @@ int main(int argc, char *argv[]) {
                 } else {
                     fprintf(stderr, "Unknown option\n");
                 }
-                exit(1);
+                return 1;
         }
     }
     char port_str[10];
