@@ -41,15 +41,19 @@ void *get_in_addr(struct sockaddr *sa) {
 int main(int argc, char**argv) {
 
     int port = 69;
+    int disable_csum = 0;
     char ch;
     /* Read command line options */
-    while ((ch = getopt(argc, argv, "p:")) != -1) {
+    while ((ch = getopt(argc, argv, "dp:")) != -1) {
         switch (ch) {
             case 'p':
                 port = atoi(optarg);
                 break;
+            case 'd':
+                disable_csum = 1;
+                break;
             case '?':
-                printf("Usage: ./server [-p port]\n");
+                printf("Usage: ./server [-d] [-p port]\n");
                 return 1;
         }
     }
@@ -125,6 +129,13 @@ int main(int argc, char**argv) {
         if (new_fd == -1) {
             perror("accept");
             continue;
+        }
+        if(disable_csum) {
+            int disable = 1;
+            if (setsockopt(sock, SOL_SOCKET, SO_NO_CHECK, (void*)&disable, sizeof(disable)) < 0) {
+                perror("setsockopt SO_NO_CHECK failed");
+                return 1;
+            }
         }
 
         inet_ntop(their_addr.ss_family,
